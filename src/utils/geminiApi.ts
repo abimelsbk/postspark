@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { billingService } from './billingService';
 
 // Initialize Gemini AI
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || 'your-gemini-api-key-here';
@@ -21,6 +22,18 @@ export interface GeneratePostOptions {
 }
 
 export const generateLinkedInPost = async (options: GeneratePostOptions): Promise<GenerationResult> => {
+  // Check if user has sufficient credits for AI generation
+  const userId = '1'; // In a real app, this would come from auth context
+  const canPerform = billingService.canPerformAction(userId, 'ai_generation');
+  
+  if (!canPerform.canPerform) {
+    return {
+      content: generateFallbackContent(options),
+      status: 'fallback',
+      message: canPerform.reason || 'Insufficient credits for AI generation.'
+    };
+  }
+
   try {
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
@@ -152,6 +165,9 @@ ${contentType.charAt(0).toUpperCase() + contentType.slice(1)} Content:`;
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
+
+    // Deduct credits for successful AI generation
+    billingService.spendCredits(userId, 'ai_generation', 'AI content generation');
 
     return {
       content: text.trim(),

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { billingService } from '../utils/billingService';
 
 interface User {
   id: string;
@@ -70,6 +71,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } : undefined
     };
     
+    // Initialize billing for the user
+    billingService.getUserBilling(mockUser.id);
+    
     setUser(mockUser);
     localStorage.setItem('postspark_user', JSON.stringify(mockUser));
     setLoading(false);
@@ -93,6 +97,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         allFeatures: true
       } : undefined
     };
+    
+    // Initialize billing for the user
+    billingService.getUserBilling(mockUser.id);
     
     setUser(mockUser);
     localStorage.setItem('postspark_user', JSON.stringify(mockUser));

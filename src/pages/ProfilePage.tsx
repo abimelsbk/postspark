@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { User, Mail, Calendar, Settings, Shield, CreditCard, ArrowLeft, Save, Edit } from 'lucide-react';
+import { User, Mail, Calendar, Settings, Shield, CreditCard, ArrowLeft, Save, Edit, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { BillingDashboard } from '../components/billing/BillingDashboard';
 
 export const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const [activeTab, setActiveTab] = useState<'profile' | 'billing'>('profile');
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || '',
@@ -39,6 +41,32 @@ export const ProfilePage: React.FC = () => {
         </button>
 
         <div className="bg-white rounded-2xl shadow-sm border border-accent-200 overflow-hidden">
+          {/* Tab Navigation */}
+          <div className="border-b border-accent-200">
+            <nav className="flex">
+              <button
+                onClick={() => setActiveTab('profile')}
+                className={`px-6 py-4 font-medium transition-colors ${
+                  activeTab === 'profile'
+                    ? 'text-primary-600 border-b-2 border-primary-600'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Profile Settings
+              </button>
+              <button
+                onClick={() => setActiveTab('billing')}
+                className={`px-6 py-4 font-medium transition-colors ${
+                  activeTab === 'billing'
+                    ? 'text-primary-600 border-b-2 border-primary-600'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Billing & Usage
+              </button>
+            </nav>
+          </div>
+
           <div className="bg-gradient-to-r from-primary-500 to-purple-600 px-8 py-12">
             <div className="flex items-center space-x-6">
               <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center">
@@ -61,6 +89,7 @@ export const ProfilePage: React.FC = () => {
           </div>
 
           <div className="p-8">
+            {activeTab === 'profile' ? (
             <div className="grid md:grid-cols-2 gap-8">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
@@ -220,29 +249,38 @@ export const ProfilePage: React.FC = () => {
                 </div>
               </div>
             </div>
+            ) : (
+              <BillingDashboard />
+            )}
+          </div>
+        </div>
 
-            <div className="border-t border-accent-200 mt-8 pt-8">
-              <h3 className="text-lg font-semibold text-gray-900 mb-6">Danger Zone</h3>
-              
-              <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium text-red-900 mb-1">Delete Account</h4>
-                    <p className="text-sm text-red-700">
-                      Permanently delete your account and all associated data. This action cannot be undone.
-                    </p>
+        {activeTab === 'profile' && (
+          <div className="bg-white rounded-2xl shadow-sm border border-accent-200 overflow-hidden mt-8">
+            <div className="p-8">
+              <div className="border-t border-accent-200 pt-8">
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">Danger Zone</h3>
+                
+                <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium text-red-900 mb-1">Delete Account</h4>
+                      <p className="text-sm text-red-700">
+                        Permanently delete your account and all associated data. This action cannot be undone.
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleDeleteAccount}
+                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors font-medium"
+                    >
+                      Delete Account
+                    </button>
                   </div>
-                  <button
-                    onClick={handleDeleteAccount}
-                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors font-medium"
-                  >
-                    Delete Account
-                  </button>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

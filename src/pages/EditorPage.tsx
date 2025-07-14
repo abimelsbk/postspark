@@ -23,6 +23,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { generateLinkedInPost } from '../utils/geminiApi';
 import { TextFormatter } from '../components/editor/TextFormatter';
 import { ScheduleModal } from '../components/scheduling/ScheduleModal';
+import { billingService } from '../utils/billingService';
+import { CreditTopUp } from '../components/billing/CreditTopUp';
 
 interface Note {
   id: string;
