@@ -18,7 +18,7 @@ import {
   Globe,
   Users
 } from 'lucide-react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { generateLinkedInPost } from '../utils/geminiApi';
 import { TextFormatter } from '../components/editor/TextFormatter';
@@ -49,6 +49,11 @@ export const EditorPage: React.FC = () => {
   const { id } = useParams();
   const { user } = useAuth();
   
+  // Redirect to landing page if user is not authenticated
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+
   // Core state
   const [note, setNote] = useState<Note>({
     id: '',
@@ -77,6 +82,15 @@ export const EditorPage: React.FC = () => {
   const [manualContent, setManualContent] = useState('');
   const [originalContent, setOriginalContent] = useState('');
   const [enhancementOptions, setEnhancementOptions] = useState<string[]>([]);
+  
+  // AI Generation History
+  const [aiGenerationHistory, setAiGenerationHistory] = useState<Array<{
+    id: string;
+    timestamp: Date;
+    contentType: string;
+    content: string;
+    title: string;
+  }>>([]);
 
   // Load existing note if editing
   useEffect(() => {
@@ -90,8 +104,15 @@ export const EditorPage: React.FC = () => {
           updatedAt: new Date(existingNote.updatedAt)
         };
         setNote(noteWithDates);
-        setManualContent(noteWithDates.content);
         setOriginalContent(noteWithDates.content);
+        
+        // Load AI generation history for this note
+        const savedHistory = JSON.parse(localStorage.getItem(`postspark_ai_history_${id}`) || '[]');
+        const historyWithDates = savedHistory.map((item: any) => ({
+          ...item,
+          timestamp: new Date(item.timestamp)
+        }));
+        setAiGenerationHistory(historyWithDates);
       }
     }
   }, [id]);
@@ -113,7 +134,6 @@ export const EditorPage: React.FC = () => {
 
     const updatedNote = {
       ...note,
-      content: manualContent,
       updatedAt: new Date(),
       id: id || Date.now().toString()
     };
@@ -142,9 +162,8 @@ export const EditorPage: React.FC = () => {
     localStorage.setItem('postspark_notes', JSON.stringify(updatedNotes));
     setNote(updatedNote);
     
-    if (!id) {
-      navigate(`/editor/${updatedNote.id}`);
-    }
+    // Always navigate back to dashboard after saving
+    navigate('/dashboard');
   };
 
   const handleGenerateContent = async () => {
@@ -175,6 +194,23 @@ export const EditorPage: React.FC = () => {
         });
         
         newGeneratedContent[contentType] = result.content;
+        
+        // Save to AI generation history
+        const historyItem = {
+          id: Date.now().toString() + '_' + contentType,
+          timestamp: new Date(),
+          contentType,
+          content: result.content,
+          title: `${contentType.charAt(0).toUpperCase() + contentType.slice(1)} - ${note.title}`
+        };
+        
+        const updatedHistory = [...aiGenerationHistory, historyItem];
+        setAiGenerationHistory(updatedHistory);
+        
+        // Save history to localStorage
+        if (note.id) {
+          localStorage.setItem(`postspark_ai_history_${note.id}`, JSON.stringify(updatedHistory));
+        }
         
         if (result.status === 'fallback') {
           setGenerationStatus('fallback');
@@ -207,7 +243,7 @@ export const EditorPage: React.FC = () => {
   };
 
   const handleEnhanceContent = async () => {
-    if (!manualContent.trim()) {
+    if (!note.content.trim()) {
       alert('Please enter some content to enhance');
       return;
     }
@@ -226,10 +262,10 @@ export const EditorPage: React.FC = () => {
         tags: note.tags,
         enhance: true,
         enhanceOptions: enhancementOptions,
-        previousContent: manualContent
+        previousContent: note.content
       });
       
-      setManualContent(result.content);
+      setNote(prev => ({ ...prev, content: result.content }));
       
       if (result.status === 'fallback') {
         setGenerationStatus('fallback');
@@ -294,7 +330,7 @@ export const EditorPage: React.FC = () => {
   };
 
   const handleInsertFormattedText = (formattedText: string) => {
-    setManualContent(prev => prev + formattedText);
+    setNote(prev => ({ ...prev, content: prev.content + formattedText }));
     setShowTextFormatter(false);
   };
 
@@ -304,7 +340,7 @@ export const EditorPage: React.FC = () => {
       id: Date.now().toString(),
       noteId: note.id,
       title: note.title,
-      content: manualContent,
+      content: note.content,
       contentType: platform,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -319,7 +355,7 @@ export const EditorPage: React.FC = () => {
   };
 
   const handleRevertToOriginal = () => {
-    setManualContent(originalContent);
+    setNote(prev => ({ ...prev, content: originalContent }));
   };
 
   return (
@@ -513,8 +549,8 @@ export const EditorPage: React.FC = () => {
                       </div>
                     </div>
                     <textarea
-                      value={manualContent}
-                      onChange={(e) => setManualContent(e.target.value)}
+                      value={note.content}
+                      onChange={(e) => setNote(prev => ({ ...prev, content: e.target.value }))}
                       placeholder="Start writing your content here..."
                       rows={12}
                       className="w-full px-4 py-3 border border-accent-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors resize-none"
@@ -552,7 +588,7 @@ export const EditorPage: React.FC = () => {
 
                   <button
                     onClick={handleEnhanceContent}
-                    disabled={isGenerating || !manualContent.trim()}
+                    disabled={isGenerating || !note.content.trim()}
                     className="w-full bg-primary-500 hover:bg-primary-600 text-white py-3 px-6 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                   >
                     {isGenerating ? (
@@ -580,7 +616,7 @@ export const EditorPage: React.FC = () => {
                             id: Date.now().toString(),
                             noteId: note.id,
                             title: note.title,
-                            content: manualContent,
+                            content: note.content,
                             contentType: 'linkedin',
                             createdAt: new Date(),
                             updatedAt: new Date()
@@ -590,7 +626,7 @@ export const EditorPage: React.FC = () => {
                           localStorage.setItem('postspark_ready_to_schedule', JSON.stringify(updatedReadyPosts));
                           alert('Content saved to ready-to-schedule!');
                         }}
-                        disabled={!manualContent.trim()}
+                        disabled={!note.content.trim()}
                         className="flex items-center justify-center space-x-2 px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <Calendar className="w-4 h-4" />
@@ -598,7 +634,7 @@ export const EditorPage: React.FC = () => {
                       </button>
                       <button
                         onClick={() => setShowScheduleModal(true)}
-                        disabled={!manualContent.trim()}
+                        disabled={!note.content.trim()}
                         className="flex items-center justify-center space-x-2 px-4 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <Send className="w-4 h-4" />
@@ -718,6 +754,47 @@ export const EditorPage: React.FC = () => {
 
           {/* Sidebar */}
           <div className="space-y-6">
+            {/* AI Generation History */}
+            {aiGenerationHistory.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-sm border border-accent-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <Sparkles className="w-5 h-5 mr-2 text-purple-500" />
+                  AI Generation History
+                </h3>
+                <div className="space-y-3 max-h-64 overflow-y-auto">
+                  {aiGenerationHistory.map((item) => (
+                    <div key={item.id} className="border border-accent-200 rounded-lg p-3 hover:bg-accent-50 transition-colors">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-900">{item.contentType}</span>
+                        <span className="text-xs text-accent-500">
+                          {item.timestamp.toLocaleTimeString()}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-600 mb-2 line-clamp-2">
+                        {item.content.substring(0, 80)}...
+                      </p>
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => {
+                            setNote(prev => ({ ...prev, content: item.content }));
+                          }}
+                          className="text-xs bg-primary-500 hover:bg-primary-600 text-white px-2 py-1 rounded transition-colors"
+                        >
+                          Use This
+                        </button>
+                        <button
+                          onClick={() => copyToClipboard(item.content, item.id)}
+                          className="text-xs bg-accent-200 hover:bg-accent-300 text-accent-700 px-2 py-1 rounded transition-colors"
+                        >
+                          {copiedText === item.id ? 'Copied!' : 'Copy'}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Quick Actions */}
             <div className="bg-white rounded-2xl shadow-sm border border-accent-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
@@ -735,7 +812,7 @@ export const EditorPage: React.FC = () => {
                 
                 <button
                   onClick={() => setShowScheduleModal(true)}
-                  disabled={!manualContent.trim() && Object.keys(generatedContent).length === 0}
+                  disabled={!note.content.trim() && Object.keys(generatedContent).length === 0}
                   className="w-full flex items-center space-x-3 p-3 text-left bg-green-50 hover:bg-green-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Clock className="w-5 h-5 text-green-500" />
@@ -760,14 +837,14 @@ export const EditorPage: React.FC = () => {
             </div>
 
             {/* Character Counts */}
-            {(manualContent || Object.keys(generatedContent).length > 0) && (
+            {(note.content || Object.keys(generatedContent).length > 0) && (
               <div className="bg-white rounded-2xl shadow-sm border border-accent-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Character Counts</h3>
                 <div className="space-y-3">
-                  {manualContent && (
+                  {note.content && (
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-accent-600">Manual Content</span>
-                      <span className="text-sm font-medium text-gray-900">{manualContent.length}</span>
+                      <span className="text-sm text-accent-600">Current Content</span>
+                      <span className="text-sm font-medium text-gray-900">{note.content.length}</span>
                     </div>
                   )}
                   {Object.entries(generatedContent).map(([type, content]) => {
@@ -805,7 +882,7 @@ export const EditorPage: React.FC = () => {
           isOpen={showScheduleModal}
           onClose={() => setShowScheduleModal(false)}
           onSchedule={handleScheduleContent}
-          content={manualContent || Object.values(generatedContent)[0] || ''}
+          content={note.content || Object.values(generatedContent)[0] || ''}
           contentType="linkedin"
         />
       )}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { User, Mail, Calendar, Settings, Shield, CreditCard, ArrowLeft, Save, Edit, Plus } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { BillingDashboard } from '../components/billing/BillingDashboard';
 
@@ -13,6 +13,11 @@ export const ProfilePage: React.FC = () => {
     name: user?.name || '',
     email: user?.email || '',
   });
+
+  // Redirect to landing page if user is not authenticated
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
 
   const handleSave = () => {
     // In a real app, this would update the user profile

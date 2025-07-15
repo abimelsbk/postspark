@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Plus, Eye, X, Calendar } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { CalendarView } from '../components/scheduling/CalendarView';
 import { ScheduleModal } from '../components/scheduling/ScheduleModal';
 import { DashboardHeader } from '../components/dashboard/DashboardHeader';
@@ -9,6 +10,7 @@ import { ScheduledPost, ReadyToSchedulePost } from '../types/scheduling';
 
 export const SchedulingPage: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [scheduledPosts, setScheduledPosts] = useState<ScheduledPost[]>([]);
   const [readyToSchedulePosts, setReadyToSchedulePosts] = useState<ReadyToSchedulePost[]>([]);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
@@ -16,6 +18,10 @@ export const SchedulingPage: React.FC = () => {
   const [selectedPost, setSelectedPost] = useState<ScheduledPost | null>(null);
   const [selectedContentForScheduling, setSelectedContentForScheduling] = useState<{content: string, type: string} | null>(null);
 
+  // Redirect to landing page if user is not authenticated
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
   // Load scheduled posts from localStorage
   useEffect(() => {
     const savedPosts = JSON.parse(localStorage.getItem('postspark_scheduled_posts') || '[]');

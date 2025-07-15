@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter, Edit, Trash2, Calendar, Tag, Sparkles } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { DashboardHeader } from '../components/dashboard/DashboardHeader';
 import { Sidebar } from '../components/dashboard/Sidebar';
@@ -22,6 +22,10 @@ export const Dashboard: React.FC = () => {
   const [selectedTag, setSelectedTag] = useState<string>('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
 
+  // Redirect to landing page if user is not authenticated
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
   // Load notes from localStorage on component mount
   useEffect(() => {
     const savedNotes = JSON.parse(localStorage.getItem('postspark_notes') || '[]');

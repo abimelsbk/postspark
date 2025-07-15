@@ -17,7 +17,8 @@ import {
   TrendingUp,
   AlertCircle
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 interface User {
   id: string;
@@ -92,6 +93,7 @@ const mockCoupons: Coupon[] = [
 
 export const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'billing' | 'coupons' | 'support' | 'settings'>('overview');
   const [users] = useState<User[]>(mockUsers);
   const [coupons, setCoupons] = useState<Coupon[]>(mockCoupons);
@@ -105,6 +107,10 @@ export const AdminDashboard: React.FC = () => {
     expiresAt: '',
   });
 
+  // Redirect to landing page if user is not authenticated or not admin
+  if (!user || !user.permissions?.adminAccess) {
+    return <Navigate to="/" replace />;
+  }
   const handleCreateCoupon = () => {
     const coupon: Coupon = {
       id: Date.now().toString(),
