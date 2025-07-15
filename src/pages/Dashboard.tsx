@@ -72,18 +72,20 @@ export const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-accent-50">
+    <div className="min-h-screen bg-accent-50 overflow-x-hidden">
       <DashboardHeader />
       
       <div className="flex">
-        <Sidebar />
+        <div className="hidden lg:block">
+          <Sidebar />
+        </div>
         
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-3 sm:p-6">
           <div className="max-w-6xl mx-auto">
             <div className="flex items-center justify-between mb-8">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">My Notes</h1>
-                <p className="text-accent-600">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">My Notes</h1>
+                <p className="text-accent-600 text-sm sm:text-base">
                   {user?.plan === 'super' 
                     ? `${notes.length} notes created (Unlimited)` :
                     user?.plan === 'free' 
@@ -96,12 +98,13 @@ export const Dashboard: React.FC = () => {
               <button
                 onClick={() => navigate('/editor')}
                 disabled={user?.plan === 'free' && notes.length >= 3 && !user?.permissions?.unlimitedNotes}
-                className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center transition-colors shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-primary-500 hover:bg-primary-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold flex items-center transition-colors shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
               >
                 <Plus className="w-5 h-5 mr-2" />
-                New Note
+                <span className="hidden sm:inline">New Note</span>
+                <span className="sm:hidden">New</span>
                 {user?.plan === 'free' && notes.length >= 3 && !user?.permissions?.unlimitedNotes && (
-                  <span className="ml-2 text-xs bg-white/20 px-2 py-1 rounded">
+                  <span className="ml-2 text-xs bg-white/20 px-2 py-1 rounded hidden sm:inline">
                     Limit Reached
                   </span>
                 )}
@@ -110,15 +113,15 @@ export const Dashboard: React.FC = () => {
 
             {/* Usage Warning for Free Users */}
             {user?.plan === 'free' && notes.length >= 2 && !user?.permissions?.unlimitedNotes && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 sm:p-4 mb-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <Sparkles className="w-5 h-5 text-yellow-500 mr-2" />
                     <div>
-                      <p className="text-yellow-800 font-medium">
+                      <p className="text-yellow-800 font-medium text-sm sm:text-base">
                         {notes.length >= 3 ? 'Monthly limit reached!' : 'Almost at your monthly limit!'}
                       </p>
-                      <p className="text-yellow-700 text-sm">
+                      <p className="text-yellow-700 text-xs sm:text-sm">
                         {notes.length >= 3 
                           ? 'Upgrade to Pro for unlimited notes and AI generations.'
                           : `You have ${3 - notes.length} note${3 - notes.length === 1 ? '' : 's'} remaining this month.`
@@ -128,9 +131,10 @@ export const Dashboard: React.FC = () => {
                   </div>
                   <button
                     onClick={() => navigate('/pricing')}
-                    className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                    className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base flex-shrink-0"
                   >
-                    Upgrade Now
+                    <span className="hidden sm:inline">Upgrade Now</span>
+                    <span className="sm:hidden">Upgrade</span>
                   </button>
                 </div>
               </div>
@@ -138,15 +142,15 @@ export const Dashboard: React.FC = () => {
 
             {/* Super User Welcome */}
             {user?.plan === 'super' && (
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-4 mb-6">
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-3 sm:p-4 mb-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <Sparkles className="w-5 h-5 text-purple-500 mr-2" />
                     <div>
-                      <p className="text-purple-800 font-medium">
+                      <p className="text-purple-800 font-medium text-sm sm:text-base">
                         ⚡ Super User Access Activated
                       </p>
-                      <p className="text-purple-700 text-sm">
+                      <p className="text-purple-700 text-xs sm:text-sm">
                         You have unlimited access to all features including unlimited AI generations, notes, and admin controls.
                       </p>
                     </div>
@@ -154,9 +158,10 @@ export const Dashboard: React.FC = () => {
                   {user?.permissions?.adminAccess && (
                     <button
                       onClick={() => navigate('/admin')}
-                      className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                      className="bg-purple-500 hover:bg-purple-600 text-white px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base flex-shrink-0"
                     >
-                      Admin Panel
+                      <span className="hidden sm:inline">Admin Panel</span>
+                      <span className="sm:hidden">Admin</span>
                     </button>
                   )}
                 </div>
@@ -164,8 +169,8 @@ export const Dashboard: React.FC = () => {
             )}
 
             <div className="bg-white rounded-2xl shadow-sm border border-accent-200 mb-6">
-              <div className="p-6 border-b border-accent-200">
-                <div className="flex flex-col sm:flex-row gap-4">
+              <div className="p-4 sm:p-6 border-b border-accent-200">
+                <div className="flex flex-col gap-3 sm:gap-4">
                   <div className="flex-1 relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-accent-400" />
                     <input
@@ -173,7 +178,7 @@ export const Dashboard: React.FC = () => {
                       placeholder="Search notes by title or content..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-accent-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                      className="w-full pl-10 pr-4 py-2 sm:py-3 border border-accent-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors text-sm sm:text-base"
                     />
                   </div>
                   
@@ -182,7 +187,7 @@ export const Dashboard: React.FC = () => {
                     <select
                       value={selectedTag}
                       onChange={(e) => setSelectedTag(e.target.value)}
-                      className="pl-10 pr-8 py-3 border border-accent-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors bg-white min-w-[150px]"
+                      className="pl-10 pr-8 py-2 sm:py-3 border border-accent-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors bg-white w-full sm:min-w-[150px] text-sm sm:text-base"
                     >
                       <option value="">All tags</option>
                       {allTags.map((tag) => (
@@ -197,14 +202,14 @@ export const Dashboard: React.FC = () => {
             </div>
 
             {filteredNotes.length === 0 ? (
-              <div className="text-center py-12">
+              <div className="text-center py-8 sm:py-12">
                 <div className="w-24 h-24 bg-accent-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Edit className="w-12 h-12 text-accent-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
                   {notes.length === 0 ? 'No notes yet' : 'No notes match your search'}
                 </h3>
-                <p className="text-accent-600 mb-6 max-w-md mx-auto">
+                <p className="text-accent-600 mb-6 max-w-md mx-auto text-sm sm:text-base">
                   {notes.length === 0 
                     ? 'Create your first note to start generating amazing LinkedIn content with AI assistance.'
                     : 'Try adjusting your search terms or filters to find what you\'re looking for.'
@@ -213,33 +218,33 @@ export const Dashboard: React.FC = () => {
                 {notes.length === 0 && (
                   <button
                     onClick={() => navigate('/editor')}
-                    className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors"
+                    className="bg-primary-500 hover:bg-primary-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold transition-colors text-sm sm:text-base"
                   >
                     Create First Note
                   </button>
                 )}
               </div>
             ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {filteredNotes.map((note) => (
                   <div key={note.id} className="bg-white rounded-2xl shadow-sm border border-accent-200 hover:shadow-lg transition-all duration-200 group">
-                    <div className="p-6">
+                    <div className="p-4 sm:p-6">
                       <div className="flex items-start justify-between mb-4">
-                        <h3 className="font-semibold text-gray-900 text-lg line-clamp-2 group-hover:text-primary-500 transition-colors cursor-pointer"
+                        <h3 className="font-semibold text-gray-900 text-base sm:text-lg line-clamp-2 group-hover:text-primary-500 transition-colors cursor-pointer flex-1 mr-2"
                             onClick={() => navigate(`/editor/${note.id}`)}>
                           {note.title}
                         </h3>
-                        <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center space-x-1 sm:space-x-2 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                           <button
                             onClick={() => navigate(`/editor/${note.id}`)}
-                            className="p-2 text-accent-400 hover:text-primary-500 hover:bg-primary-50 rounded-lg transition-colors"
+                            className="p-1.5 sm:p-2 text-accent-400 hover:text-primary-500 hover:bg-primary-50 rounded-lg transition-colors"
                             title="Edit note"
                           >
                             <Edit className="w-4 h-4" />
                           </button>
                           <button 
                             onClick={() => setShowDeleteConfirm(note.id)}
-                            className="p-2 text-accent-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-1.5 sm:p-2 text-accent-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                             title="Delete note"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -247,16 +252,16 @@ export const Dashboard: React.FC = () => {
                         </div>
                       </div>
                       
-                      <p className="text-accent-600 text-sm mb-4 line-clamp-3 leading-relaxed">
+                      <p className="text-accent-600 text-xs sm:text-sm mb-4 line-clamp-3 leading-relaxed break-words">
                         {getPreviewText(note.content)}
                       </p>
                       
                       {note.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-4">
+                        <div className="flex flex-wrap gap-1 sm:gap-2 mb-4">
                           {note.tags.slice(0, 3).map((tag) => (
-                            <span key={tag} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-700">
+                            <span key={tag} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-700 max-w-full">
                               <Tag className="w-3 h-3 mr-1" />
-                              {tag}
+                              <span className="truncate">{tag}</span>
                             </span>
                           ))}
                           {note.tags.length > 3 && (
@@ -267,21 +272,21 @@ export const Dashboard: React.FC = () => {
                         </div>
                       )}
                       
-                      <div className="flex items-center justify-between text-xs text-accent-500">
+                      <div className="flex items-center justify-between text-xs text-accent-500 flex-wrap gap-2">
                         <div className="flex items-center">
                           <Calendar className="w-3 h-3 mr-1" />
-                          Updated {note.updatedAt.toLocaleDateString()}
+                          <span className="truncate">Updated {note.updatedAt.toLocaleDateString()}</span>
                         </div>
-                        <div className="text-accent-400">
+                        <div className="text-accent-400 flex-shrink-0">
                           {note.content.length} chars
                         </div>
                       </div>
                     </div>
                     
-                    <div className="border-t border-accent-200 px-6 py-4">
+                    <div className="border-t border-accent-200 px-4 sm:px-6 py-3 sm:py-4">
                       <button
                         onClick={() => navigate(`/editor/${note.id}`)}
-                        className="w-full text-primary-500 hover:text-primary-600 font-medium text-sm transition-colors hover:bg-primary-50 py-2 rounded-lg"
+                        className="w-full text-primary-500 hover:text-primary-600 font-medium text-xs sm:text-sm transition-colors hover:bg-primary-50 py-2 rounded-lg"
                       >
                         Open & Edit
                       </button>

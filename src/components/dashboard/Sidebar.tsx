@@ -17,7 +17,7 @@ export const Sidebar: React.FC = () => {
   const location = useLocation();
 
   return (
-    <aside className="w-64 bg-white border-r border-accent-200 min-h-screen">
+    <aside className="w-64 bg-white border-r border-accent-200 min-h-screen hidden lg:block">
       <div className="p-6">
         <nav className="space-y-2">
           {menuItems.map((item) => (

@@ -359,10 +359,10 @@ export const EditorPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-accent-50">
+    <div className="min-h-screen bg-accent-50 overflow-x-hidden">
       {/* Header */}
       <div className="bg-white border-b border-accent-200 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
               <button
@@ -375,7 +375,7 @@ export const EditorPage: React.FC = () => {
                 <h1 className="text-xl font-semibold text-gray-900">
                   {id ? 'Edit Note' : 'Create New Note'}
                 </h1>
-                <p className="text-sm text-accent-600">
+                <p className="text-sm text-accent-600 hidden sm:block">
                   {user?.plan === 'super' 
                     ? 'Unlimited AI generations (Super User)' :
                     user?.plan === 'free' 
@@ -386,23 +386,24 @@ export const EditorPage: React.FC = () => {
               </div>
             </div>
             
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <button
                 onClick={handleSaveNote}
-                className="flex items-center space-x-2 px-4 py-2 text-primary-700 bg-primary-100 hover:bg-primary-200 rounded-lg transition-colors"
+                className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-4 py-2 text-primary-700 bg-primary-100 hover:bg-primary-200 rounded-lg transition-colors text-sm sm:text-base"
               >
                 <Save className="w-4 h-4" />
-                <span>Save Note</span>
+                <span className="hidden sm:inline">Save Note</span>
+                <span className="sm:hidden">Save</span>
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid lg:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
+        <div className="grid lg:grid-cols-3 gap-4 lg:gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-4 lg:space-y-8">
             {/* Part 1: Capture Your Idea */}
             <div className="bg-white rounded-2xl shadow-sm border border-accent-200 p-6">
               <div className="flex items-center space-x-2 mb-6">
@@ -410,7 +411,7 @@ export const EditorPage: React.FC = () => {
                 <h2 className="text-xl font-semibold text-gray-900">Capture Your Idea</h2>
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Title
@@ -420,7 +421,7 @@ export const EditorPage: React.FC = () => {
                     value={note.title}
                     onChange={(e) => setNote(prev => ({ ...prev, title: e.target.value }))}
                     placeholder="Enter a catchy title for your content idea..."
-                    className="w-full px-4 py-3 border border-accent-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-accent-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors text-sm sm:text-base"
                   />
                 </div>
 
@@ -432,8 +433,8 @@ export const EditorPage: React.FC = () => {
                     value={note.content}
                     onChange={(e) => setNote(prev => ({ ...prev, content: e.target.value }))}
                     placeholder="Jot down your thoughts, key points, experiences, or any content ideas..."
-                    rows={6}
-                    className="w-full px-4 py-3 border border-accent-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors resize-none"
+                    rows={4}
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-accent-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors resize-none text-sm sm:text-base"
                   />
                 </div>
 
@@ -441,9 +442,9 @@ export const EditorPage: React.FC = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Tags
                   </label>
-                  <div className="flex flex-wrap gap-2 mb-3">
+                  <div className="flex flex-wrap gap-1 sm:gap-2 mb-3">
                     {note.tags.map((tag) => (
-                      <span key={tag} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-700">
+                      <span key={tag} className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-primary-100 text-primary-700">
                         <Tag className="w-3 h-3 mr-1" />
                         {tag}
                         <button
@@ -455,18 +456,18 @@ export const EditorPage: React.FC = () => {
                       </span>
                     ))}
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <input
                       type="text"
                       value={newTag}
                       onChange={(e) => setNewTag(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
                       placeholder="Add tags (e.g., productivity, leadership, tech)"
-                      className="flex-1 px-3 py-2 border border-accent-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                      className="flex-1 px-3 py-2 border border-accent-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors text-sm sm:text-base"
                     />
                     <button
                       onClick={handleAddTag}
-                      className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                      className="px-3 sm:px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm sm:text-base"
                     >
                       <Plus className="w-4 h-4" />
                     </button>
@@ -487,7 +488,7 @@ export const EditorPage: React.FC = () => {
               </p>
 
               {/* Options in Row */}
-              <div className="grid md:grid-cols-2 gap-6 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6">
                 {/* Option A: Manual Development */}
                 <div className={`border-2 rounded-xl p-4 cursor-pointer transition-all ${
                   activeTab === 'manual' 
@@ -497,9 +498,9 @@ export const EditorPage: React.FC = () => {
                 onClick={() => setActiveTab('manual')}>
                   <div className="flex items-center space-x-3 mb-3">
                     <Edit className="w-5 h-5 text-primary-500" />
-                    <h3 className="font-semibold text-gray-900">Option A: Manual Development</h3>
+                    <h3 className="font-semibold text-gray-900 text-sm sm:text-base">Option A: Manual Development</h3>
                   </div>
-                  <p className="text-sm text-accent-600">
+                  <p className="text-xs sm:text-sm text-accent-600">
                     Write and edit your content manually with AI enhancement options
                   </p>
                 </div>
@@ -513,9 +514,9 @@ export const EditorPage: React.FC = () => {
                 onClick={() => setActiveTab('ai')}>
                   <div className="flex items-center space-x-3 mb-3">
                     <Sparkles className="w-5 h-5 text-primary-500" />
-                    <h3 className="font-semibold text-gray-900">Option B: AI Generation</h3>
+                    <h3 className="font-semibold text-gray-900 text-sm sm:text-base">Option B: AI Generation</h3>
                   </div>
-                  <p className="text-sm text-accent-600">
+                  <p className="text-xs sm:text-sm text-accent-600">
                     Let AI create optimized content for your selected platforms
                   </p>
                 </div>
@@ -523,7 +524,7 @@ export const EditorPage: React.FC = () => {
 
               {/* Content based on selected option */}
               {activeTab === 'manual' ? (
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   <div>
                     <div className="flex items-center justify-between mb-4">
                       <label className="block text-sm font-medium text-gray-700">
@@ -532,18 +533,19 @@ export const EditorPage: React.FC = () => {
                       <div className="flex items-center space-x-2">
                         <button
                           onClick={() => setShowTextFormatter(true)}
-                          className="flex items-center space-x-2 px-3 py-1 text-purple-600 bg-purple-100 hover:bg-purple-200 rounded-lg transition-colors text-sm"
+                          className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1 text-purple-600 bg-purple-100 hover:bg-purple-200 rounded-lg transition-colors text-xs sm:text-sm"
                         >
                           <Type className="w-4 h-4" />
-                          <span>Format Text</span>
+                          <span className="hidden sm:inline">Format Text</span>
+                          <span className="sm:hidden">Format</span>
                         </button>
                         {manualContent !== originalContent && (
                           <button
                             onClick={handleRevertToOriginal}
-                            className="flex items-center space-x-2 px-3 py-1 text-accent-600 bg-accent-100 hover:bg-accent-200 rounded-lg transition-colors text-sm"
+                            className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1 text-accent-600 bg-accent-100 hover:bg-accent-200 rounded-lg transition-colors text-xs sm:text-sm"
                           >
                             <RotateCcw className="w-4 h-4" />
-                            <span>Revert</span>
+                            <span className="hidden sm:inline">Revert</span>
                           </button>
                         )}
                       </div>
@@ -552,8 +554,8 @@ export const EditorPage: React.FC = () => {
                       value={note.content}
                       onChange={(e) => setNote(prev => ({ ...prev, content: e.target.value }))}
                       placeholder="Start writing your content here..."
-                      rows={12}
-                      className="w-full px-4 py-3 border border-accent-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors resize-none"
+                      rows={8}
+                      className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-accent-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors resize-none text-sm sm:text-base"
                     />
                   </div>
 
@@ -589,7 +591,7 @@ export const EditorPage: React.FC = () => {
                   <button
                     onClick={handleEnhanceContent}
                     disabled={isGenerating || !note.content.trim()}
-                    className="w-full bg-primary-500 hover:bg-primary-600 text-white py-3 px-6 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                    className="w-full bg-primary-500 hover:bg-primary-600 text-white py-2 sm:py-3 px-4 sm:px-6 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm sm:text-base"
                   >
                     {isGenerating ? (
                       <>
@@ -609,7 +611,7 @@ export const EditorPage: React.FC = () => {
                     <label className="block text-sm font-medium text-gray-700 mb-3">
                       Schedule Options:
                     </label>
-                    <div className="grid md:grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <button
                         onClick={() => {
                           const readyToSchedulePost = {
@@ -627,7 +629,7 @@ export const EditorPage: React.FC = () => {
                           alert('Content saved to ready-to-schedule!');
                         }}
                         disabled={!note.content.trim()}
-                        className="flex items-center justify-center space-x-2 px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center justify-center space-x-2 px-3 sm:px-4 py-2 sm:py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                       >
                         <Calendar className="w-4 h-4" />
                         <span>Ready to Schedule</span>
@@ -635,7 +637,7 @@ export const EditorPage: React.FC = () => {
                       <button
                         onClick={() => setShowScheduleModal(true)}
                         disabled={!note.content.trim()}
-                        className="flex items-center justify-center space-x-2 px-4 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center justify-center space-x-2 px-3 sm:px-4 py-2 sm:py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                       >
                         <Send className="w-4 h-4" />
                         <span>Schedule Now</span>
@@ -644,26 +646,26 @@ export const EditorPage: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {/* Platform Selection */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-3">
                       Select Content Types to Generate:
                     </label>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                       {contentTypes.map((type) => (
-                        <label key={type.id} className="flex items-center p-3 border border-accent-200 rounded-lg hover:bg-accent-50 cursor-pointer">
+                        <label key={type.id} className="flex items-center p-2 sm:p-3 border border-accent-200 rounded-lg hover:bg-accent-50 cursor-pointer">
                           <input
                             type="checkbox"
                             checked={selectedContentTypes.includes(type.id)}
                             onChange={() => handleContentTypeToggle(type.id)}
                             className="mr-3 text-primary-500 focus:ring-primary-500"
                           />
-                          <div className="flex items-center space-x-2">
+                          <div className="flex items-center space-x-2 min-w-0">
                             <span className="text-lg">{type.emoji}</span>
-                            <div>
-                              <p className="font-medium text-gray-900 text-sm">{type.label}</p>
-                              <p className="text-xs text-accent-600">{type.description}</p>
+                            <div className="min-w-0 flex-1">
+                              <p className="font-medium text-gray-900 text-xs sm:text-sm truncate">{type.label}</p>
+                              <p className="text-xs text-accent-600 hidden sm:block">{type.description}</p>
                             </div>
                           </div>
                         </label>
@@ -674,7 +676,7 @@ export const EditorPage: React.FC = () => {
                   <button
                     onClick={handleGenerateContent}
                     disabled={isGenerating || selectedContentTypes.length === 0 || !note.title.trim() || !note.content.trim()}
-                    className="w-full bg-primary-500 hover:bg-primary-600 text-white py-3 px-6 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                    className="w-full bg-primary-500 hover:bg-primary-600 text-white py-2 sm:py-3 px-4 sm:px-6 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm sm:text-base"
                   >
                     {isGenerating ? (
                       <>
@@ -690,14 +692,14 @@ export const EditorPage: React.FC = () => {
                   </button>
 
                   {user?.plan === 'free' && !user?.permissions?.unlimitedAI && (
-                    <p className="text-sm text-accent-600 text-center">
+                    <p className="text-xs sm:text-sm text-accent-600 text-center">
                       {user.usage.aiGenerations}/3 AI generations used this month
                     </p>
                   )}
                   
                   {user?.plan === 'super' && (
                     <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-3">
-                      <p className="text-sm text-purple-700 text-center font-medium">
+                      <p className="text-xs sm:text-sm text-purple-700 text-center font-medium">
                         ⚡ Super User: Unlimited AI generations available
                       </p>
                     </div>
@@ -705,7 +707,7 @@ export const EditorPage: React.FC = () => {
 
                   {/* Generated Content Display */}
                   {Object.keys(generatedContent).length > 0 && (
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       <h3 className="text-lg font-semibold text-gray-900">Generated Content</h3>
                       
                       {generationStatus === 'fallback' && generationMessage && (
@@ -717,7 +719,7 @@ export const EditorPage: React.FC = () => {
                       {Object.entries(generatedContent).map(([contentType, content]) => {
                         const typeInfo = contentTypes.find(t => t.id === contentType);
                         return (
-                          <div key={contentType} className="border border-accent-200 rounded-lg p-4">
+                          <div key={contentType} className="border border-accent-200 rounded-lg p-3 sm:p-4">
                             <div className="flex items-center justify-between mb-3">
                               <div className="flex items-center space-x-2">
                                 <span className="text-lg">{typeInfo?.emoji}</span>
@@ -738,7 +740,7 @@ export const EditorPage: React.FC = () => {
                               </div>
                             </div>
                             <div className="bg-accent-50 rounded-lg p-3">
-                              <pre className="whitespace-pre-wrap text-sm text-gray-700 font-sans">
+                              <pre className="whitespace-pre-wrap text-xs sm:text-sm text-gray-700 font-sans break-words">
                                 {content}
                               </pre>
                             </div>
@@ -753,38 +755,38 @@ export const EditorPage: React.FC = () => {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-4 lg:space-y-6 mt-4 lg:mt-0">
             {/* AI Generation History */}
             {aiGenerationHistory.length > 0 && (
-              <div className="bg-white rounded-2xl shadow-sm border border-accent-200 p-6">
+              <div className="bg-white rounded-2xl shadow-sm border border-accent-200 p-4 sm:p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                   <Sparkles className="w-5 h-5 mr-2 text-purple-500" />
                   AI Generation History
                 </h3>
-                <div className="space-y-3 max-h-64 overflow-y-auto">
+                <div className="space-y-2 sm:space-y-3 max-h-48 sm:max-h-64 overflow-y-auto">
                   {aiGenerationHistory.map((item) => (
-                    <div key={item.id} className="border border-accent-200 rounded-lg p-3 hover:bg-accent-50 transition-colors">
+                    <div key={item.id} className="border border-accent-200 rounded-lg p-2 sm:p-3 hover:bg-accent-50 transition-colors">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-900">{item.contentType}</span>
+                        <span className="text-xs sm:text-sm font-medium text-gray-900 truncate">{item.contentType}</span>
                         <span className="text-xs text-accent-500">
                           {item.timestamp.toLocaleTimeString()}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-600 mb-2 line-clamp-2">
+                      <p className="text-xs text-gray-600 mb-2 line-clamp-2 break-words">
                         {item.content.substring(0, 80)}...
                       </p>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1 sm:space-x-2">
                         <button
                           onClick={() => {
                             setNote(prev => ({ ...prev, content: item.content }));
                           }}
-                          className="text-xs bg-primary-500 hover:bg-primary-600 text-white px-2 py-1 rounded transition-colors"
+                          className="text-xs bg-primary-500 hover:bg-primary-600 text-white px-2 py-1 rounded transition-colors flex-shrink-0"
                         >
                           Use This
                         </button>
                         <button
                           onClick={() => copyToClipboard(item.content, item.id)}
-                          className="text-xs bg-accent-200 hover:bg-accent-300 text-accent-700 px-2 py-1 rounded transition-colors"
+                          className="text-xs bg-accent-200 hover:bg-accent-300 text-accent-700 px-2 py-1 rounded transition-colors flex-shrink-0"
                         >
                           {copiedText === item.id ? 'Copied!' : 'Copy'}
                         </button>
@@ -796,12 +798,12 @@ export const EditorPage: React.FC = () => {
             )}
 
             {/* Quick Actions */}
-            <div className="bg-white rounded-2xl shadow-sm border border-accent-200 p-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-accent-200 p-4 sm:p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 <button
                   onClick={() => setShowTextFormatter(true)}
-                  className="w-full flex items-center space-x-3 p-3 text-left bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors"
+                  className="w-full flex items-center space-x-2 sm:space-x-3 p-2 sm:p-3 text-left bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors"
                 >
                   <Type className="w-5 h-5 text-purple-500" />
                   <div>
@@ -813,7 +815,7 @@ export const EditorPage: React.FC = () => {
                 <button
                   onClick={() => setShowScheduleModal(true)}
                   disabled={!note.content.trim() && Object.keys(generatedContent).length === 0}
-                  className="w-full flex items-center space-x-3 p-3 text-left bg-green-50 hover:bg-green-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full flex items-center space-x-2 sm:space-x-3 p-2 sm:p-3 text-left bg-green-50 hover:bg-green-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Clock className="w-5 h-5 text-green-500" />
                   <div>
@@ -825,26 +827,26 @@ export const EditorPage: React.FC = () => {
             </div>
 
             {/* Tips */}
-            <div className="bg-white rounded-2xl shadow-sm border border-accent-200 p-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-accent-200 p-4 sm:p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">💡 Pro Tips</h3>
-              <div className="space-y-3 text-sm text-accent-600">
+              <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-accent-600">
                 <p>• Use specific, descriptive titles for better AI generation</p>
                 <p>• Add relevant tags to improve content targeting</p>
-                <p>• Try different content types for various platforms</p>
+                <p className="hidden sm:block">• Try different content types for various platforms</p>
                 <p>• Use the Unicode formatter to make your posts stand out</p>
-                <p>• Schedule posts during peak engagement hours</p>
+                <p className="hidden sm:block">• Schedule posts during peak engagement hours</p>
               </div>
             </div>
 
             {/* Character Counts */}
             {(note.content || Object.keys(generatedContent).length > 0) && (
-              <div className="bg-white rounded-2xl shadow-sm border border-accent-200 p-6">
+              <div className="bg-white rounded-2xl shadow-sm border border-accent-200 p-4 sm:p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Character Counts</h3>
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   {note.content && (
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-accent-600">Current Content</span>
-                      <span className="text-sm font-medium text-gray-900">{note.content.length}</span>
+                      <span className="text-xs sm:text-sm text-accent-600">Current Content</span>
+                      <span className="text-xs sm:text-sm font-medium text-gray-900">{note.content.length}</span>
                     </div>
                   )}
                   {Object.entries(generatedContent).map(([type, content]) => {
@@ -854,8 +856,8 @@ export const EditorPage: React.FC = () => {
                     
                     return (
                       <div key={type} className="flex justify-between items-center">
-                        <span className="text-sm text-accent-600">{typeInfo?.label}</span>
-                        <span className={`text-sm font-medium ${isOverLimit ? 'text-red-500' : 'text-gray-900'}`}>
+                        <span className="text-xs sm:text-sm text-accent-600 truncate mr-2">{typeInfo?.label}</span>
+                        <span className={`text-xs sm:text-sm font-medium ${isOverLimit ? 'text-red-500' : 'text-gray-900'} flex-shrink-0`}>
                           {content.length}{limit && `/${limit}`}
                         </span>
                       </div>
