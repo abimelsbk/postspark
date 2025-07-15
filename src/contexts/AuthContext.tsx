@@ -54,21 +54,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Check for super user credentials
-    const isSuperUser = email === 'super@postspark.com' && password === 'superuser123';
-    
     const mockUser: User = {
       id: '1',
       email,
       name: email.split('@')[0],
-      plan: isSuperUser ? 'super' : 'free',
-      usage: { notes: isSuperUser ? 999 : 2, aiGenerations: isSuperUser ? 999 : 1 },
-      permissions: isSuperUser ? {
-        unlimitedAI: true,
-        unlimitedNotes: true,
-        adminAccess: true,
-        allFeatures: true
-      } : undefined
+      plan: 'free',
+      usage: { notes: 2, aiGenerations: 1 }
     };
     
     // Initialize billing for the user
@@ -88,14 +79,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       id: '1',
       email,
       name,
-      plan: email === 'super@postspark.com' ? 'super' : 'free',
-      usage: { notes: 0, aiGenerations: 0 },
-      permissions: email === 'super@postspark.com' ? {
-        unlimitedAI: true,
-        unlimitedNotes: true,
-        adminAccess: true,
-        allFeatures: true
-      } : undefined
+      plan: 'free',
+      usage: { notes: 0, aiGenerations: 0 }
     };
     
     // Initialize billing for the user
@@ -109,6 +94,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     setUser(null);
     localStorage.removeItem('postspark_user');
+    // Clear all user-related data from localStorage
+    const keys = Object.keys(localStorage);
+    keys.forEach(key => {
+      if (key.startsWith('postspark_') || key.startsWith('billing_')) {
+        localStorage.removeItem(key);
+      }
+    });
   };
 
   return (
